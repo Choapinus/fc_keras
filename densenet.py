@@ -225,7 +225,7 @@ if __name__ == "__main__":
 	# model.summary()
 	# model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
-	aug = {'h_flip': True, 'v_flip': True, 'brightness': .25, 'rotation': 25}
+	aug = {'h_flip': False, 'v_flip': True, 'brightness': .25, 'rotation': 25}
 	trainG = DataGenerator('openeds_split', 'train', batch_size, augmentation=aug)
 	# testG = DataGenerator('openeds_split', 'test', batch_size)
 	valG = DataGenerator('openeds_split', 'val', batch_size)
