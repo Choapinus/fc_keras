@@ -240,7 +240,7 @@ if __name__ == "__main__":
 		return keras.backend.mean(keras.backend.categorical_crossentropy(target, output, from_logits=True))
 
 	def rmean_scwl_tf(target, output):
-		return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=target))
+		return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=target, labels=output))
 
 	# opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-4)
 	opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995)
