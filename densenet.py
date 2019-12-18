@@ -153,8 +153,6 @@ class DataGenerator(keras.utils.Sequence):
 		'Generate one batch of data'
 		# Generate indexes of the batch
 		indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
-		# im_indexes = self.images[indexes*self.batch_size:(index+1)*self.batch_size]
-		# lb_indexes = self.labels[indexes*self.batch_size:(index+1)*self.batch_size]
 
 		# Generate data
 		X, y = self.__data_generation(indexes)
@@ -193,8 +191,8 @@ class DataGenerator(keras.utils.Sequence):
 	def __data_generation(self, indexes):
 		'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
 		# Initialization
-		X = np.empty((self.batch_size, *self.dim, self.n_channels), np.float32)
-		y = np.empty((self.batch_size, *self.dim, self.n_classes), dtype=np.uint8)
+		X = np.empty((self.batch_size, *self.dim, self.n_channels), dtype=np.float32)
+		y = np.empty((self.batch_size, *self.dim, self.n_classes), dtype=np.float32)
 		# dividir y con to one hot de utils
 
 		# Generate data
@@ -215,14 +213,14 @@ class DataGenerator(keras.utils.Sequence):
 			# assign data to batch
 			X[i, ] = im
 			for x in np.unique(lb):
-				y[i, ..., x] = np.where(lb == x, 1, 0)
-				y[i, ..., x] = np.float32(y[i, ..., x])
+				mask = np.where(lb == x, 1, 0)
+				y[i, ..., x] = np.float32(mask)
 
 		return X, y
 
 
 if __name__ == "__main__":
-	model = build(400, 640, 4) # dropout_p=0.2
+	model = build(400, 640, 4, dropout_p=0.5) # dropout_p=0.2
 	batch_size = 1
 	# model.summary()
 	# model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
@@ -235,12 +233,11 @@ if __name__ == "__main__":
 	# loss function
 	# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=network, labels=net_output))
 	def rmean_scwl_keras(target, output):
-		# return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=output, logits=target))
 		# return keras.backend.mean(keras.backend.softmax(keras.backend.categorical_crossentropy(target, output, from_logits=True)))
 		return keras.backend.mean(keras.backend.categorical_crossentropy(target, output, from_logits=True))
 
 	def rmean_scwl_tf(target, output):
-		return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=target, labels=output))
+		return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=target))
 
 	# opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-4)
 	opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995)
