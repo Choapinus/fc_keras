@@ -234,15 +234,18 @@ if __name__ == "__main__":
 
 	# loss function
 	# loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=network, labels=net_output))
-	def rmean_scwl(target, output):
+	def rmean_scwl_keras(target, output):
 		# return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=output, logits=target))
 		# return keras.backend.mean(keras.backend.softmax(keras.backend.categorical_crossentropy(target, output, from_logits=True)))
 		return keras.backend.mean(keras.backend.categorical_crossentropy(target, output, from_logits=True))
 
+	def rmean_scwl_tf(target, output):
+		return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=target))
+
 	# opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-4)
 	opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995)
 	# model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy', ])
-	model.compile(opt, loss=rmean_scwl, metrics=['accuracy', ])
+	model.compile(opt, loss=rmean_scwl_tf, metrics=['accuracy', ])
 
 	mckpt = ModelCheckpoint('./models/densenet_epoch_{epoch:04d}.hdf5', monitor='val_loss', save_best_only=True, verbose=1)
 	tensorboard = TensorBoard(log_dir='./logs')
