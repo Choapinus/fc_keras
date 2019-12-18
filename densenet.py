@@ -210,7 +210,7 @@ class DataGenerator(keras.utils.Sequence):
 			lb = np.load(self.labels[idx])
 			im, lb = self.dataAugmentation(im, lb)
 			im = np.float32(im) / 255.
-			lb = bp.float32(lb)
+			lb = np.float32(lb)
 			
 			# assign data to batch
 			X[i, ] = im
