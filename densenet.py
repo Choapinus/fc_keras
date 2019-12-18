@@ -210,12 +210,13 @@ class DataGenerator(keras.utils.Sequence):
 			lb = np.load(self.labels[idx])
 			im, lb = self.dataAugmentation(im, lb)
 			im = np.float32(im) / 255.
-			lb = np.float32(lb)
+			# lb = np.float32(lb)
 			
 			# assign data to batch
 			X[i, ] = im
 			for x in np.unique(lb):
 				y[i, ..., x] = np.where(lb == x, 1, 0)
+				y[i, ..., x] = np.float32(y[i, ..., x])
 
 		return X, y
 
