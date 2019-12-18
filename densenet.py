@@ -210,6 +210,7 @@ class DataGenerator(keras.utils.Sequence):
 			lb = np.load(self.labels[idx])
 			im, lb = self.dataAugmentation(im, lb)
 			im = np.float32(im) / 255.
+			lb = bp.float32(lb)
 			
 			# assign data to batch
 			X[i, ] = im
@@ -220,7 +221,7 @@ class DataGenerator(keras.utils.Sequence):
 
 
 if __name__ == "__main__":
-	model = build(400, 640, 4)
+	model = build(400, 640, 4) # dropout_p=0.2
 	batch_size = 1
 	# model.summary()
 	# model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
