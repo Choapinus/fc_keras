@@ -241,8 +241,8 @@ if __name__ == "__main__":
 
 	# opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-4)
 	opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995)
-	# model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy', ])
-	model.compile(opt, loss=rmean_scwl_tf, metrics=['accuracy', ])
+	model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy', ])
+	# model.compile(opt, loss=rmean_scwl_tf, metrics=['accuracy', ])
 
 	mckpt = ModelCheckpoint('./models/densenet_epoch_{epoch:04d}.hdf5', monitor='val_loss', save_best_only=True, verbose=1)
 	tensorboard = TensorBoard(log_dir='./logs')
