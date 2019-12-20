@@ -1,9 +1,10 @@
 import os
 import keras
 import numpy as np
+from metrics import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from keras.callbacks import ModelCheckpoint, TensorBoard
+from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 
 from datagenerator import DataGenerator
 from model import Tiramisu
@@ -31,30 +32,28 @@ if __name__ == "__main__":
 	valG = DataGenerator('openeds_split', 'val', batch_size)
 
 	# optimizer
-	opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-4)
+	opt = keras.optimizers.SGD(lr=1.0, momentum=0.9, nesterov=True, decay=1e-2)
 	# opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995) 
 	# opt = keras.optimizers.Adadelta(lr=1.0, rho=0.95)
 
-	# model compile with loss function
-	# model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy', ])
-	# model.compile(opt, loss=rmean_scwl_tf, metrics=['accuracy', ])
-	model.compile(opt, loss='kullback_leibler_divergence', metrics=['accuracy', ])
-	# model.compile(opt, loss='kullback_leibler_divergence', metrics=['accuracy', mean_iou(4)]) # no funca xd
-	"""
-	https://machinelearningmastery.com/how-to-choose-loss-functions-when-training-deep-learning-neural-networks/
-	
-	kullback_leibler_divergence used when using models that learn to approximate a more 
-	complex function than simply multi-class classification, 
-	such as in the case of an autoencoder used for learning 
-	a dense feature representation under a model that must reconstruct the original input.
-	"""
+	# model compile with loss function	
+	model.compile(opt, loss=dice_loss, metrics=[mean_iou, ]) # funca
+	# model.compile(opt, loss=iou_loss_core, metrics=[mean_iou, ])
 
-	mckpt = ModelCheckpoint('./models/densenet_epoch_{epoch:04d}.hdf5', monitor='val_loss', save_best_only=True, verbose=1)
+	mckpt = ModelCheckpoint(
+		'./models/densenet_epoch_{epoch:04d}.hdf5', 
+		monitor='val_mean_iou', save_best_only=True, verbose=1, mode='max'
+	)
 	tensorboard = TensorBoard(log_dir='./logs')
+
+	r_lr = ReduceLROnPlateau(
+		monitor='val_mean_iou', patience=5, verbose=1, mode='max', min_lr=1e-10
+	)
+
 
 	H = model.fit_generator(
 		generator=trainG, validation_data=valG, 
-		epochs=100, callbacks=[mckpt, tensorboard, ], 
+		epochs=200, callbacks=[mckpt, tensorboard, r_lr, ], 
 		steps_per_epoch=np.ceil(len(trainG) // batch_size),
 		validation_steps=np.floor(len(valG) // batch_size)
 	)
@@ -62,13 +61,14 @@ if __name__ == "__main__":
 	# H = model.fit_generator(
 	# 	generator=trainG, validation_data=valG, 
 	# 	epochs=10, callbacks=[mckpt, tensorboard, ], 
-	# 	steps_per_epoch=100, validation_steps=100
+	# 	steps_per_epoch=200, validation_steps=100
 	# )
 
+	# cambiar val_loss y val_acc por correspondientes
 	fig, ax = plt.subplots()
-	ax.plot(range(len(H.history['val_acc'])), H.history['val_acc'], label='val_acc')
+	ax.plot(range(len(H.history['val_mean_iou'])), H.history['val_mean_iou'], label='val_mean_iou')
 	ax.plot(range(len(H.history['val_loss'])), H.history['val_loss'], label='val_loss')
-	# ax.plot(range(len(H.history['acc'])), H.history['acc'], label='acc')
+	# ax.plot(range(len(H.history['mean_iou'])), H.history['mean_iou'], label='mean_iou')
 	# ax.plot(range(len(H.history['loss'])), H.history['loss'], label='loss')
 	plt.legend(loc='upper left', borderaxespad=0.)
 
