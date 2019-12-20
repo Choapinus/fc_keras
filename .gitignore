@@ -3,3 +3,5 @@ openeds_dataset
 openeds_split
 sss_dataset
 .ipynb_checkpoints/
+__pycache__/
+.vscode/
