@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	tensorboard = TensorBoard(log_dir='./logs')
 
 	r_lr = ReduceLROnPlateau(
-		monitor='val_mean_iou', patience=5, verbose=1, mode='max', min_lr=1e-10
+		monitor='val_mean_iou', patience=10, verbose=1, mode='max', min_lr=1e-10
 	)
 
 
