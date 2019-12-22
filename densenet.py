@@ -37,18 +37,18 @@ if __name__ == "__main__":
 	# opt = keras.optimizers.Adadelta(lr=1.0, rho=0.95)
 
 	# model compile with loss function
-	model.compile(opt, loss='categorical_crossentropy', metrics=[mean_iou, ])  # funca
+	model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy', mean_iou, ])  # funca
 	# model.compile(opt, loss=dice_loss, metrics=[mean_iou, ]) # funca
 	# model.compile(opt, loss=iou_loss_core, metrics=[mean_iou, ])
 
 	mckpt = ModelCheckpoint(
 		'./models/densenet_epoch_{epoch:04d}.hdf5', 
-		monitor='val_mean_iou', save_best_only=True, verbose=1, mode='max'
+		monitor='val_loss', save_best_only=True, verbose=1, mode='min'
 	)
 	tensorboard = TensorBoard(log_dir='./logs')
 
 	r_lr = ReduceLROnPlateau(
-		monitor='val_mean_iou', patience=3, verbose=1, mode='max', min_lr=1e-10
+		monitor='val_loss', patience=3, verbose=1, mode='min', min_lr=1e-10
 	)
 
 
