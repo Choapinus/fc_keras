@@ -32,12 +32,13 @@ if __name__ == "__main__":
 	valG = DataGenerator('openeds_split', 'val', batch_size)
 
 	# optimizer
-	opt = keras.optimizers.SGD(lr=1.0, momentum=0.9, nesterov=True, decay=1e-2)
+	opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-2)
 	# opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995) 
 	# opt = keras.optimizers.Adadelta(lr=1.0, rho=0.95)
 
-	# model compile with loss function	
-	model.compile(opt, loss=dice_loss, metrics=[mean_iou, ]) # funca
+	# model compile with loss function
+	model.compile(opt, loss='categorical_crossentropy', metrics=[mean_iou, ])  # funca
+	# model.compile(opt, loss=dice_loss, metrics=[mean_iou, ]) # funca
 	# model.compile(opt, loss=iou_loss_core, metrics=[mean_iou, ])
 
 	mckpt = ModelCheckpoint(
@@ -47,22 +48,22 @@ if __name__ == "__main__":
 	tensorboard = TensorBoard(log_dir='./logs')
 
 	r_lr = ReduceLROnPlateau(
-		monitor='val_mean_iou', patience=10, verbose=1, mode='max', min_lr=1e-10
+		monitor='val_mean_iou', patience=3, verbose=1, mode='max', min_lr=1e-10
 	)
 
 
-	H = model.fit_generator(
-		generator=trainG, validation_data=valG, 
-		epochs=200, callbacks=[mckpt, tensorboard, r_lr, ], 
-		steps_per_epoch=np.ceil(len(trainG) // batch_size),
-		validation_steps=np.floor(len(valG) // batch_size)
-	)
-	
 	# H = model.fit_generator(
 	# 	generator=trainG, validation_data=valG, 
-	# 	epochs=10, callbacks=[mckpt, tensorboard, ], 
-	# 	steps_per_epoch=200, validation_steps=100
+	# 	epochs=200, callbacks=[mckpt, tensorboard, r_lr, ], 
+	# 	steps_per_epoch=np.ceil(len(trainG) // batch_size),
+	# 	validation_steps=np.floor(len(valG) // batch_size)
 	# )
+	
+	H = model.fit_generator(
+		generator=trainG, validation_data=valG, 
+		epochs=10, callbacks=[mckpt, tensorboard, ], 
+		steps_per_epoch=200, validation_steps=100
+	)
 
 	# cambiar val_loss y val_acc por correspondientes
 	fig, ax = plt.subplots()
