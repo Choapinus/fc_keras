@@ -43,12 +43,12 @@ if __name__ == "__main__":
 
 	mckpt = ModelCheckpoint(
 		'./models/densenet_epoch_{epoch:04d}.hdf5', 
-		monitor='val_loss', save_best_only=True, verbose=1, mode='min'
+		monitor='val_mean_iou', save_best_only=True, verbose=1, mode='max'
 	)
 	tensorboard = TensorBoard(log_dir='./logs')
 
 	r_lr = ReduceLROnPlateau(
-		monitor='val_loss', patience=3, verbose=1, mode='min', min_lr=1e-10
+		monitor='val_mean_iou', patience=3, verbose=1, mode='max', min_lr=1e-10
 	)
 
 
