@@ -32,7 +32,7 @@ if __name__ == "__main__":
 	valG = DataGenerator('openeds_split', 'val', batch_size)
 
 	# optimizer
-	opt = keras.optimizers.SGD(lr=1e-4, momentum=0.9, nesterov=True, decay=1e-2)
+	opt = keras.optimizers.SGD(lr=1e-3, momentum=0.9, nesterov=True, decay=1e-4)
 	# opt = keras.optimizers.RMSprop(lr=0.0001, decay=0.995) 
 	# opt = keras.optimizers.Adadelta(lr=1.0, rho=0.95)
 
@@ -52,27 +52,27 @@ if __name__ == "__main__":
 	)
 
 
-	# H = model.fit_generator(
-	# 	generator=trainG, validation_data=valG, 
-	# 	epochs=200, callbacks=[mckpt, tensorboard, r_lr, ], 
-	# 	steps_per_epoch=np.ceil(len(trainG) // batch_size),
-	# 	validation_steps=np.floor(len(valG) // batch_size)
-	# )
-	
 	H = model.fit_generator(
 		generator=trainG, validation_data=valG, 
-		epochs=10, callbacks=[mckpt, tensorboard, ], 
-		steps_per_epoch=200, validation_steps=100
+		epochs=200, callbacks=[mckpt, tensorboard, r_lr, ], 
+		# steps_per_epoch=np.ceil(len(trainG) // batch_size),
+		# validation_steps=np.floor(len(valG) // batch_size)
 	)
+	
+	# H = model.fit_generator(
+	# 	generator=trainG, validation_data=valG, 
+	# 	epochs=10, callbacks=[mckpt, tensorboard, ], 
+	# 	steps_per_epoch=200, validation_steps=100
+	# )
 
 	# cambiar val_loss y val_acc por correspondientes
-	fig, ax = plt.subplots()
-	ax.plot(range(len(H.history['val_mean_iou'])), H.history['val_mean_iou'], label='val_mean_iou')
-	ax.plot(range(len(H.history['val_loss'])), H.history['val_loss'], label='val_loss')
-	# ax.plot(range(len(H.history['mean_iou'])), H.history['mean_iou'], label='mean_iou')
-	# ax.plot(range(len(H.history['loss'])), H.history['loss'], label='loss')
-	plt.legend(loc='upper left', borderaxespad=0.)
+	# fig, ax = plt.subplots()
+	# ax.plot(range(len(H.history['val_mean_iou'])), H.history['val_mean_iou'], label='val_mean_iou')
+	# ax.plot(range(len(H.history['val_loss'])), H.history['val_loss'], label='val_loss')
+	# # ax.plot(range(len(H.history['mean_iou'])), H.history['mean_iou'], label='mean_iou')
+	# # ax.plot(range(len(H.history['loss'])), H.history['loss'], label='loss')
+	# plt.legend(loc='upper left', borderaxespad=0.)
 
-	ax.set(xlabel='Epochs', ylabel='val', title='Epochs vs val_loss')
-	ax.grid()
-	fig.savefig("performance.png")
+	# ax.set(xlabel='Epochs', ylabel='val', title='Epochs vs val_loss')
+	# ax.grid()
+	# fig.savefig("performance.png")
